@@ -1,35 +1,39 @@
 import update from 'immutability-helper';
+import { fetchAllTodos, createTodo, updateTodoStatus, deleteTodo } from './api';
 
 /**
- * Get the list of todo items.
+ * Get the list of todo items from the API.
+ * @return {Promise<Array>}
+ */
+export async function getAll() {
+    try {
+        return await fetchAllTodos();
+    } catch (error) {
+        console.error('Error fetching todos:', error);
+        // Return empty array as fallback
+        return [];
+    }
+}
+
+/**
+ * Get initial empty list (for sync initialization)
  * @return {Array}
  */
-export function getAll() {
-    return [
-        {
-            id: 1,
-            text: 'Learn Javascript',
-            completed: false
-        },
-        {
-            id: 2,
-            text: 'Learn React',
-            completed: false
-        },
-        {
-            id: 3,
-            text: 'Build a React App',
-            completed: false
-        }
-    ]
+export function getInitialList() {
+    return [];
 }
 
-export function getItemById(itemId) {
-    return getAll().find(item => item.id === itemId);
+export function getItemById(items, itemId) {
+    return items.find(item => item.id === itemId);
 }
 
-export function updateStatus(items, itemId, completed) {
+/**
+ * Update status locally (for optimistic updates)
+ */
+export function updateStatusLocal(items, itemId, completed) {
     let index = items.findIndex(item => item.id === itemId);
+
+    if (index === -1) return items;
 
     // Returns a new list of data with updated item.
     return update(items, {
@@ -40,27 +44,50 @@ export function updateStatus(items, itemId, completed) {
 }
 
 /**
- * A counter to generate a unique id for a todo item.
- * Can remove this logic when the todo is created using backend/database logic.
- * @type {Number}
+ * Update todo status via API
+ * @param {number} itemId
+ * @param {boolean} completed
+ * @return {Promise<Object>}
  */
-let todoCounter = 1;
-
-function getNextId() {
-    return getAll().length + todoCounter++;
+export async function updateStatus(itemId, completed) {
+    return await updateTodoStatus(itemId, completed);
 }
 
 /**
- * Adds a new item on the list and returns the new updated list (immutable).
+ * Add a new todo via API
+ * @param {string} text
+ * @return {Promise<Object>}
+ */
+export async function addTodo(text) {
+    return await createTodo(text);
+}
+
+/**
+ * Adds a new item to the list locally (for optimistic updates)
  *
  * @param {Array} list
- * @param {Object} data
+ * @param {Object} item
  * @return {Array}
  */
-export function addToList(list, data) {
-    let item = Object.assign({
-        id: getNextId()
-    }, data);
-
+export function addToList(list, item) {
     return list.concat([item]);
+}
+
+/**
+ * Remove a todo via API
+ * @param {number} id
+ * @return {Promise<Object>}
+ */
+export async function removeTodo(id) {
+    return await deleteTodo(id);
+}
+
+/**
+ * Remove item from list locally
+ * @param {Array} list
+ * @param {number} itemId
+ * @return {Array}
+ */
+export function removeFromList(list, itemId) {
+    return list.filter(item => item.id !== itemId);
 }
