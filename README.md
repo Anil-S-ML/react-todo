@@ -1,28 +1,62 @@
 # React Todo App
 
-This is a sample react todo app done step-by-step.
-This sample app was a part of react workshop.
+A full-stack React todo application with PostgreSQL database persistence.
 
-You can check the slides [here](https://speakerdeck.com/kabirbaidhya/frontend-development-with-react).
+## Quick Start with Docker
 
-Check the demo hosted on heroku https://simplest-react-todo-app.herokuapp.com/.
+The easiest way to run the application is using Docker Compose:
 
-
-## Instructions
-
-First clone this repository.
 ```bash
-$ git clone https://github.com/kabirbaidhya/react-todo-app.git
+# Start all services (PostgreSQL, Backend, Frontend)
+docker-compose up -d
+
+# View running containers
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Stop and remove all data (fresh start)
+docker-compose down -v
 ```
 
-Install dependencies. Make sure you already have [`nodejs`](https://nodejs.org/en/) & [`npm`](https://www.npmjs.com/) installed in your system.
+Once running, access the app at **http://localhost:3000**
+
+### Services
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | http://localhost:3000 | React UI served by Nginx |
+| Backend API | http://localhost:3002/api/todos | Express.js REST API |
+| PostgreSQL | localhost:5433 | Database (internal) |
+
+## Local Development
+
+### Prerequisites
+- [Node.js](https://nodejs.org/en/) & npm
+- PostgreSQL (or use Docker for the database only)
+
+### Frontend Setup
 ```bash
-$ npm install # or yarn
+npm install
+npm start
 ```
 
-Run it
+### Backend Setup
 ```bash
-$ npm start # or yarn start
+cd backend
+npm install
+npm run dev
+```
+
+### Environment Variables
+Copy the example files and configure:
+```bash
+cp .env.example .env
+cp backend/.env.example backend/.env
 ```
 
 ## Steps
